@@ -33,7 +33,7 @@ struct ContentView: View {
                                 reminder.isCompleted.toggle()
                             }
                             .foregroundStyle(page.color)
-                            .font(.system(size: 40))
+                            .font(.system(size: 30))
 
                         
                         Text(reminder.title)
@@ -54,6 +54,10 @@ struct ContentView: View {
                           selectedColor: $page.color)
             } label: {
                 Image(systemName: "gearshape.fill")
+                    .foregroundStyle(page.color)
+                    .font(.system(size: 30))
+
+
             }
     }
         .sheet(isPresented: $isEditing) {

@@ -14,7 +14,7 @@ struct EditSheet: View {
         VStack(spacing: 20) {
             // TODO: Add list.bullet.circle.fill icon and TextField
             Image(systemName: "list.bullet.circle.fill")
-                .font(.system(size: 40))
+                .font(.system(size: 30))
                 
             TextField("List Title", text: $title)
                 .textFieldStyle(.roundedBorder)
