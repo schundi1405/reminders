@@ -9,61 +9,93 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var isEditing: Bool = false
-    // TODO: Add an @State property to hold a RemindersPage struct
-    @State private var page: RemindersPage = RemindersPage(title: "Tasks for 9/14", items: [Reminder(title: "Eat cake!"),Reminder(title: "Dress up"),Reminder(title: "Celebrate!")], color: .pink)
+    @State private var page: RemindersPage = RemindersPage(
+            title: "Tasks for 9/14",
+            items: [
+                Reminder(title: "Eat cake!", description: "", date: Date()),
+                Reminder(title: "Dress up", description: "", date: Date()),
+                Reminder(title: "Celebrate!", description: "", date: Date())
+            ],
+            color: .pink
+        )
     
-
-
     var body: some View {
-        NavigationStack{
-        VStack {
-            // TODO: Add header view
-            Text(page.title)
-                .font(.largeTitle.bold())
-                .foregroundColor(page.color)
-                .padding()
-            
-            List {
-                // TODO: Loop through the page's reminders using ForEach
-                ForEach($page.items) { $reminder in
-                    // TODO: Display each reminder row
-                    HStack {
-                        Image(systemName: reminder.isCompleted ? "checkmark.circle.fill" : "circle")
-                            .onTapGesture {
-                                reminder.isCompleted.toggle()
+            NavigationStack {
+                List {
+                    ForEach($page.items) { $reminder in
+                        NavigationLink {
+                            ReminderDetailView(
+                                title: $reminder.title,
+                                description: $reminder.description,
+                                date: $reminder.date,
+                                isEditing: $isEditing
+                            )
+                        } label: {
+                            HStack {
+                                Image(systemName: reminder.isCompleted ? "checkmark.circle.fill" : "circle")
+                                    .foregroundStyle(page.color)
+                                    .font(.system(size: 30))
+                                    .onTapGesture {
+                                        reminder.isCompleted.toggle()
+                                    }
+                                
+                                VStack(alignment: .leading) {
+                                    TextField("Reminder title", text: $reminder.title)
+                                        .font(.headline)
+                                    
+                                    Text(reminder.date.relativeTime)
+                                        .font(.headline)
+                                        .foregroundColor(.gray)
+                                }
                             }
-                            .foregroundStyle(page.color)
-                            .font(.system(size: 30))
-
-                        
-                        Text(reminder.title)
+                            .padding(.vertical, 4)
+                        }
+                    }
+                    .onDelete { indexSet in
+                        page.items.remove(atOffsets: indexSet)
                     }
                 }
-                .onDelete { indexSet in
-                    page.items.remove(atOffsets: indexSet)
+                .listStyle(.plain)
+                .navigationTitle(page.title)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button {
+                            isEditing = true
+                        } label: {
+                            Image(systemName: "gearshape.fill")
+                                .foregroundStyle(page.color)
+                                .font(.system(size: 25))
+                        }
+                    }
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button {
+                            addNewReminder()
+                        } label: {
+                            Image(systemName: "plus")
+                                .foregroundStyle(page.color)
+                                .font(.system(size: 25))
+                        }
+                    }
+                }
+                .sheet(isPresented: $isEditing) {
+                    EditSheet(title: $page.title, selectedColor: $page.color)
                 }
             }
-            .listStyle(.plain)
-            
-            // TODO: Add footer view
-            
-            
         }
-            NavigationLink {
-                EditSheet(title: $page.title,
-                          selectedColor: $page.color)
-            } label: {
-                Image(systemName: "gearshape.fill")
-                    .foregroundStyle(page.color)
-                    .font(.system(size: 30))
-
-
-            }
-    }
-        .sheet(isPresented: $isEditing) {
-            // TODO: Add remaining binding
-            EditSheet(title: $page.title, selectedColor: $page.color)
-            
+        
+// how to add a new rem
+        private func addNewReminder() {
+            let newReminder = Reminder(title: "", description: "", date: Date())
+            page.items.append(newReminder)
         }
     }
-}
+
+// date stuff
+    extension Date {
+        var relativeTime: String {
+            let formatter = RelativeDateTimeFormatter()
+            formatter.unitsStyle = .short
+            return formatter.localizedString(for: self, relativeTo: Date())
+        }
+    }
+

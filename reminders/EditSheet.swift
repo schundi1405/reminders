@@ -19,9 +19,6 @@ struct EditSheet: View {
             TextField("List Title", text: $title)
                 .textFieldStyle(.roundedBorder)
 
-            
-            
-            
             ColorChooser(selectedColor: $selectedColor)
             
             Spacer()
